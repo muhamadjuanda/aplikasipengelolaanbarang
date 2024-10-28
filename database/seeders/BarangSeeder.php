@@ -9,6 +9,6 @@ class BarangSeeder extends Seeder
 {
     public function run()
     {
-        Barang::factory()->count(100)->create(); // Menghasilkan 100 data barang
+        Barang::factory()->count(100)->create();
     }
 }

@@ -9,7 +9,7 @@ class AddSkuToBarangTable extends Migration
     public function up()
     {
         Schema::table('barang', function (Blueprint $table) {
-            $table->integer('sku')->after('jenis_barang'); // Menambahkan kolom sku setelah kolom jenis_barang
+            $table->string('sku')->after('jenis_barang'); // Menambahkan kolom sku setelah kolom jenis_barang
         });
     }
 

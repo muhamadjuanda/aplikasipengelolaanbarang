@@ -33,70 +33,81 @@
             <tbody>
             </tbody>
         </table>
-
     </div>
 
-    <!-- Script DataTables -->
+    <!-- Static Modal for Error Notification -->
+    <div class="modal fade" id="errorModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="errorModalLabel">Error</h1>
+                </div>
+                <div class="modal-body">
+                    <p>Sesi Anda telah berakhir. Silahkan login terlebih dahulu.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="redirectLoginButton">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         $(document).ready(function() {
             $("#barangTable").DataTable({
                 processing: true,
                 serverSide: true,
-                ajax: "{{ route('barang.index') }}",
+                ajax: {
+                    url: "{{ route('barang.index') }}",
+                    error: function(xhr) {
+                        if (xhr.status === 401) { // Status 401 menunjukkan Unauthorized (sesi berakhir)
+                            // Show modal on unauthorized access
+                            $("#errorModal").modal('show');
+                        } else {
+                            alert("Terjadi kesalahan saat mengambil data. Silakan coba lagi nanti.");
+                        }
+                    }
+                },
                 columns: [{
-                        data: "nomor_urut", // Kolom nomor urut yang sudah disiapkan di controller
-                        name: "nomor_urut",
+                        data: "nomor_urut",
+                        name: "nomor_urut"
                     },
                     {
                         data: "kode_barang",
-                        name: "kode_barang",
+                        name: "kode_barang"
                     },
                     {
                         data: "nama_barang",
-                        name: "nama_barang",
+                        name: "nama_barang"
                     },
                     {
                         data: "jenis_barang",
-                        name: "jenis_barang",
+                        name: "jenis_barang"
                     },
                     {
                         data: "sku",
-                        name: "sku",
+                        name: "sku"
                     },
                     {
                         data: "satuan",
-                        name: "satuan",
+                        name: "satuan"
                     },
                     {
                         data: "harga_beli",
-                        name: "harga_beli",
+                        name: "harga_beli"
                     },
                     {
                         data: "jumlah_stok",
-                        name: "jumlah_stok",
+                        name: "jumlah_stok"
                     },
                     {
                         data: "action",
                         name: "action",
                         orderable: false,
                         searchable: false,
-                    },
+                    }
                 ],
-
-                // "rowCallback": function(row, data) {
-                //     // Membuat setiap sel di kolom yang diinginkan menjadi link
-                //     $(row).find('td').each(function(index) {
-                //         // Misalkan kita ingin menjadikan semua sel kecuali kolom aksi sebagai link
-                //         if (index <
-                //             8) { // Ganti 8 dengan jumlah kolom yang ingin Anda jadikan link
-                //             $(this).on('click', function() {
-                //                 window.location.href = "{{ url('barang') }}/" + data
-                //                     .kode_barang; // Ganti URL sesuai kebutuhan
-                //             });
-                //         }
-                //     });
-                // },
-
                 language: {
                     lengthMenu: "Tampilkan _MENU_ entri",
                     zeroRecords: "Tidak ada data yang ditemukan",
@@ -113,18 +124,23 @@
                 },
                 columnDefs: [{
                         orderable: true,
-                        targets: [0, 1, 2, 3, 4, 5, 6, 7],
-                    }, // Kolom yang dapat diurutkan
+                        targets: [0, 1, 2, 3, 4, 5, 6, 7]
+                    },
                     {
                         orderable: false,
-                        targets: 8,
-                    }, // Kolom aksi tidak dapat diurutkan
+                        targets: 8
+                    },
                 ],
                 pageLength: 5,
                 lengthMenu: [5, 10, 25, 50],
                 searching: true,
                 lengthChange: true,
                 responsive: true,
+            });
+
+            // Redirect to login page when the close button is clicked
+            $("#redirectLoginButton").on("click", function() {
+                window.location.href = "{{ route('login') }}"; // Redirect to login page
             });
         });
     </script>
